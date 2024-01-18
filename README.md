@@ -9,4 +9,5 @@ cd AGX_Isaac_Prepare
 sudo ./prepareAGX.sh <USB_NAME>
 ```
 **As CUDNN requires of an authentication to download, make sure that the .deb file is in the `/home/<user>` directory before executing the script!**
+
 **You can download CUDNN for your CUDA install by clicking [HERE](https://developer.nvidia.com/rdp/cudnn-download)**
