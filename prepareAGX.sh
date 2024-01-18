@@ -13,12 +13,14 @@ NC='\033[0m' #No color # ${NC}
 echo -e "${YELLOW}Updating packages...${NC}"
 sudo apt upgrade -y
 sudo apt update
+sudo apt-get install -y nano
 
 ### Configuración VNC ###
 echo -e "${YELLOW}Installing vino...${NC}"
 cd ~
 sudo apt install -y vino
 echo -e "${YELLOW}Configuring vino server...${NC}"
+cd /home/usuario
 git clone https://github.com/Martin-Reparaz/dispChange.git
 cd dispChange
 chmod +x *
@@ -89,7 +91,11 @@ echo -e "${YELLOW}Setting the to power to MAX settings...${NC}"
 sudo /usr/sbin/nvpmodel -m 0
 echo -e "${YELLOW}Adding user to container group...${NC}"
 sudo usermod -aG docker $USER
-newgrp docker
+/usr/bin/newgrp docker << EONG
+echo -e "${GREEN}Docker subshell started...${NC}"
+# newgrp docker # Redundant, we are alredy in the docker subshell
+id
+EONG
 
 ### SETTING UP THE DOCKER ###
 echo -e "${YELLOW}Setting up the docker...${NC}"
@@ -102,10 +108,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o 
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 # Add the repository to Apt sources:
-echo \ 
-"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \ 
-"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \ 
-sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 
 sudo apt install docker-buildx-plugin
@@ -128,8 +131,8 @@ docker info
 echo -e "${YELLOW}Setting up developer environment...${NC}"
 cd ~
 echo -e "${YELLOW}Configuring the production repository...${NC}"
-curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
-  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
     sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
     sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 sudo sed -i -e '/experimental/ s/^#//g' /etc/apt/sources.list.d/nvidia-container-toolkit.list
