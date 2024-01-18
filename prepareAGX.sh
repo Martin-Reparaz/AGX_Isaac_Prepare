@@ -15,6 +15,8 @@ then
   exit 1
 fi
 
+sudo echo -e "${YELLOW}Running as user:${GREEN} $USER ${YELLOW}, so the working directory will be${CYAN} /home/$USER/${NC}"
+
 ### Actualizar paquetes ###
 echo -e "${YELLOW}Updating packages...${NC}"
 sudo apt upgrade -y
