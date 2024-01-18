@@ -17,7 +17,7 @@ sudo apt-get install -y nano
 
 ### Configuración VNC ###
 echo -e "${YELLOW}Installing vino...${NC}"
-cd ~
+cd /home/usuario
 sudo apt install -y vino
 echo -e "${YELLOW}Configuring vino server...${NC}"
 cd /home/usuario
@@ -29,19 +29,19 @@ chmod +x *
 
 ### Instalación pip ###
 echo -e "${YELLOW}Installing pip...${NC}"
-cd ~
+cd /home/usuario
 sudo apt-get install -y pip
 
 ### Instalación Jetson Stats ###
 echo -e "${YELLOW}Installing Jetson-Stats...${NC}"
-cd ~
+cd /home/usuario
 sudo pip3 install jetson-stats
 echo -e "${YELLOW}Initializing jtop service...${NC}"
 sudo systemctl restart jtop.service # Es necesario realizar un reboot para que jtop funcione
 
 ### Instalación de CUDA y CUDNN ###
 echo -e "${YELLOW}Installing CUDA...${NC}"
-cd ~
+cd /home/usuario
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/sbsa/cuda-ubuntu2004.pin
 sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
 wget https://developer.download.nvidia.com/compute/cuda/12.3.2/local_installers/cuda-repo-ubuntu2004-12-3-local_12.3.2-545.23.08-1_arm64.deb
@@ -75,14 +75,14 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 
 ### ROS2 PACKAGES INSTALL ###
 echo -e "${YELLOW}Installing ROS2 packages...${NC}"
-cd ~
+cd /home/usuario
 sudo apt update
 sudo apt install -y ros-humble-desktop-full
 sudo apt install -y ros-dev-tools
 
 ### ISAAC ROS COMPUTE SETUP ###
 echo -e "${YELLOW}Configuring Isaac Ros Compute setup...${NC}"
-cd ~
+cd /home/usuario
 sudo apt-get install -y nvidia-container
 cat /etc/nv_tegra_release # Should be: Jetpack 5.1.2 & R35 (release), REVISION: 4.1
 echo -e "${YELLOW}Setting the GPU and CPU clock to max...${NC}"
@@ -93,13 +93,13 @@ echo -e "${YELLOW}Adding user to container group...${NC}"
 sudo usermod -aG docker $USER
 /usr/bin/newgrp docker << EONG
 echo -e "${GREEN}Docker subshell started...${NC}"
-# newgrp docker # Redundant, we are alredy in the docker subshell
+newgrp docker
 id
 EONG
 
 ### SETTING UP THE DOCKER ###
 echo -e "${YELLOW}Setting up the docker...${NC}"
-cd ~
+cd /home/usuario
 # Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install ca-certificates curl gnupg
@@ -116,7 +116,7 @@ sudo apt install docker-buildx-plugin
 ### PREPARING DOCKER TO WORK WITH USB REMOBABLE DEVICE ###
 echo -e "${YELLOW}Modifying deault docker directory to work with USB...${NC}"
 echo -e "${RED}For these steps USB must be connected!!${NC}"
-cd ~
+cd /home/usuario
 cd /var/lib
 sudo rm -rf docker
 cd /media/usuario/Martin
@@ -129,7 +129,7 @@ docker info
 
 ### DEVELOPER ENVIRONMENT SETUP ###
 echo -e "${YELLOW}Setting up developer environment...${NC}"
-cd ~
+cd /home/usuario
 echo -e "${YELLOW}Configuring the production repository...${NC}"
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
@@ -154,10 +154,10 @@ git lfs install --skip-repo
 
 echo -e "${YELLOW}Creating ROS2 Workspace...${NC}"
 mkdir -p  /media/usuario/Martin/workspaces/isaac_ros-dev/src
-echo "export ISAAC_ROS_WS=/media/usuario/Martin/workspaces/isaac_ros-dev/" >> ~/.bashrc
-source ~/.bashrc
+echo "export ISAAC_ROS_WS=/media/usuario/Martin/workspaces/isaac_ros-dev/" >> /home/usuario/.bashrc
+source /home/usuario/.bashrc
 
 ### REBOOT BOARD ###
 echo -e "${YELLOW}Applying display device configuration and booting board...${NC}"
-cd ~/dispChange
+cd /home/usuario/dispChange
 sudo ./dispMode.sh --vnc
