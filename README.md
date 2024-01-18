@@ -4,8 +4,11 @@ This script takes into account that the board only has 32GB of memory, so for it
 
 ## How to use:
 ```
+sudo apt update
+sudo apt-get install -y dos2unix
 git clone https://github.com/Martin-Reparaz/AGX_Isaac_Prepare.git
 cd AGX_Isaac_Prepare
+sudo dos2unix prepareAGX.sh
 ./prepareAGX.sh <USB_NAME>
 ```
 **As CUDNN requires of an authentication to download, make sure that the .deb file is in the `/home/<user>` directory before executing the script!**
