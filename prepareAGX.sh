@@ -9,6 +9,12 @@ BLUE='\033[1;34m'      # ${BLUE}
 CYAN='\033[1;36m'      # ${CYAN}
 NC='\033[0m' #No color # ${NC}
 
+if [ -z $1 ]
+then
+  echo -e "${RED}USB Name not provided... ${YELLOW}Usage: ${RED}sudo ./prepareAGX.sh <USB_NAME> ${YELLOW}!!!${RED} -> Exiting..."
+  exit 1
+fi
+
 ### Actualizar paquetes ###
 echo -e "${YELLOW}Updating packages...${NC}"
 sudo apt upgrade -y
@@ -17,10 +23,10 @@ sudo apt-get install -y nano
 
 ### Configuración VNC ###
 echo -e "${YELLOW}Installing vino...${NC}"
-cd /home/usuario
+cd /home/$USER
 sudo apt install -y vino
 echo -e "${YELLOW}Configuring vino server...${NC}"
-cd /home/usuario
+cd /home/$USER
 git clone https://github.com/Martin-Reparaz/dispChange.git
 cd dispChange
 chmod +x *
@@ -29,19 +35,19 @@ chmod +x *
 
 ### Instalación pip ###
 echo -e "${YELLOW}Installing pip...${NC}"
-cd /home/usuario
+cd /home/$USER
 sudo apt-get install -y pip
 
 ### Instalación Jetson Stats ###
 echo -e "${YELLOW}Installing Jetson-Stats...${NC}"
-cd /home/usuario
+cd /home/$USER
 sudo pip3 install jetson-stats
 echo -e "${YELLOW}Initializing jtop service...${NC}"
 sudo systemctl restart jtop.service # Es necesario realizar un reboot para que jtop funcione
 
 ### Instalación de CUDA y CUDNN ###
 echo -e "${YELLOW}Installing CUDA...${NC}"
-cd /home/usuario
+cd /home/$USER
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/sbsa/cuda-ubuntu2004.pin
 sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
 wget https://developer.download.nvidia.com/compute/cuda/12.3.2/local_installers/cuda-repo-ubuntu2004-12-3-local_12.3.2-545.23.08-1_arm64.deb
@@ -75,14 +81,14 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 
 ### ROS2 PACKAGES INSTALL ###
 echo -e "${YELLOW}Installing ROS2 packages...${NC}"
-cd /home/usuario
+cd /home/$USER
 sudo apt update
 sudo apt install -y ros-humble-desktop-full
 sudo apt install -y ros-dev-tools
 
 ### ISAAC ROS COMPUTE SETUP ###
 echo -e "${YELLOW}Configuring Isaac Ros Compute setup...${NC}"
-cd /home/usuario
+cd /home/$USER
 sudo apt-get install -y nvidia-container
 cat /etc/nv_tegra_release # Should be: Jetpack 5.1.2 & R35 (release), REVISION: 4.1
 echo -e "${YELLOW}Setting the GPU and CPU clock to max...${NC}"
@@ -99,7 +105,7 @@ EONG
 
 ### SETTING UP THE DOCKER ###
 echo -e "${YELLOW}Setting up the docker...${NC}"
-cd /home/usuario
+cd /home/$USER
 # Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install ca-certificates curl gnupg
@@ -116,20 +122,27 @@ sudo apt install docker-buildx-plugin
 ### PREPARING DOCKER TO WORK WITH USB REMOBABLE DEVICE ###
 echo -e "${YELLOW}Modifying deault docker directory to work with USB...${NC}"
 echo -e "${RED}For these steps USB must be connected!!${NC}"
-cd /home/usuario
+if [! -d /media/$USER/$1 ]
+then
+  echo -e "${RED}/media/$USER/$1 directory doesn't exist! -> Exiting..."
+  exit 1
+else
+  echo -e "${GREEN}/media/$USER/$1 Directory exists!"
+fi
+cd /home/$USER
 cd /var/lib
 sudo rm -rf docker
-cd /media/usuario/Martin
+cd /media/$USER/$1
 mkdir var && mkdir var/lib && mkdir var/lib/docker
 cd /var/lib
-sudo ln -s /media/usuario/Martin/var/lib/docker docker
+sudo ln -s /media/$USER/$1/var/lib/docker docker
 sudo systemctl restart docker
 echo -e "${CYAN}After boot it is possible that you´ll have to run docker daemon manually by using: sudo systemctl start docker${NC}"
 docker info
 
 ### DEVELOPER ENVIRONMENT SETUP ###
 echo -e "${YELLOW}Setting up developer environment...${NC}"
-cd /home/usuario
+cd /home/$USER
 echo -e "${YELLOW}Configuring the production repository...${NC}"
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
@@ -153,11 +166,11 @@ sudo apt-get install git-lfs
 git lfs install --skip-repo
 
 echo -e "${YELLOW}Creating ROS2 Workspace...${NC}"
-mkdir -p  /media/usuario/Martin/workspaces/isaac_ros-dev/src
-echo "export ISAAC_ROS_WS=/media/usuario/Martin/workspaces/isaac_ros-dev/" >> /home/usuario/.bashrc
-source /home/usuario/.bashrc
+mkdir -p  /media/$USER/$1/workspaces/isaac_ros-dev/src
+echo "export ISAAC_ROS_WS=/media/$USER/$1/workspaces/isaac_ros-dev/" >> /home/$USER/.bashrc
+source /home/$USER/.bashrc
 
 ### REBOOT BOARD ###
 echo -e "${YELLOW}Applying display device configuration and booting board...${NC}"
-cd /home/usuario/dispChange
+cd /home/$USER/dispChange
 sudo ./dispMode.sh --vnc
