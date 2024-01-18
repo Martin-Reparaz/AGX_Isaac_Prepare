@@ -7,4 +7,4 @@ git clone https://github.com/Martin-Reparaz/AGX_Isaac_Prepare.git
 cd AGX_Isaac_Prepare
 sudo ./prepareAGX.sh
 ```
-***As CUDNN requires of an authentication to download, make sure that the .deb file is in the /home/<user> directory before executing the script**
+**As CUDNN requires of an authentication to download, make sure that the .deb file is in the /home/<user> directory before executing the script**
