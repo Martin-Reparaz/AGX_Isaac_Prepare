@@ -15,15 +15,13 @@ then
   exit 1
 fi
 
-sudo echo -e "${YELLOW}Running as user:${GREEN} $USER ${YELLOW}, so the working directory will be${CYAN} /home/$USER/${NC}"
-
-### Actualizar paquetes ###
+### UPDATING PACKAGES ###
 echo -e "${YELLOW}Updating packages...${NC}"
 sudo apt upgrade -y
 sudo apt update
 sudo apt-get install -y nano
 
-### Configuración VNC ###
+### CONFIGURING VNC CONECTION ###
 echo -e "${YELLOW}Installing vino...${NC}"
 cd /home/$USER
 sudo apt install -y vino
@@ -32,22 +30,22 @@ cd /home/$USER
 git clone https://github.com/Martin-Reparaz/dispChange.git
 cd dispChange
 chmod +x *
-./conf_vnc_server.sh
+su -c '/home/$USER/dispChange/conf_vnc_server.sh' $USER
 # sudo ./dispMode.sh --vnc # Ejecutar este el ultimo, ya que requiere de reboot
 
-### Instalación pip ###
+### INSTALLING PIP ###
 echo -e "${YELLOW}Installing pip...${NC}"
 cd /home/$USER
 sudo apt-get install -y pip
 
-### Instalación Jetson Stats ###
+### INSTALLING JETSON-STATS ###
 echo -e "${YELLOW}Installing Jetson-Stats...${NC}"
 cd /home/$USER
 sudo pip3 install jetson-stats
 echo -e "${YELLOW}Initializing jtop service...${NC}"
 sudo systemctl restart jtop.service # Es necesario realizar un reboot para que jtop funcione
 
-### Instalación de CUDA y CUDNN ###
+### INSTALLING CUDA & CUDNN ###
 echo -e "${YELLOW}Installing CUDA...${NC}"
 cd /home/$USER
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/sbsa/cuda-ubuntu2004.pin
@@ -66,7 +64,7 @@ echo -e "${RED}As for cudnn download authentification is required, please downlo
 sudo dpkg -i cudnn-local-repo-ubuntu2004-8.9.7.29_1.0-1_arm64.deb
 sudo cp /var/cudnn-local-repo-ubuntu2004-8.9.7.29/cudnn-local-7C47AFB9-keyring.gpg /usr/share/keyrings/
 
-### Isaac ROS Buildfarm ###
+### ISAAC ROS BUILDFARM ###
 echo -e "${YELLOW}Installing dependencies for Isaac Buildfarm...${NC}"
 sudo apt update && sudo apt install gnupg wget
 sudo apt install software-properties-common
