@@ -12,6 +12,7 @@ sudo dos2unix prepareAGX.sh
 ./prepareAGX.sh <USB_NAME>
 ```
 $${\color{red}**As \space CUDNN \space requires \space of \space an \space authentication \space to \space download, \space make \space sure \space that \space the \space .deb \space file \space is \space in \space the \space `/home/<user>` \space directory \space before \space executing \space the \space script!**}$$
+
 **As CUDNN requires of an authentication to download, make sure that the .deb file is in the `/home/<user>` directory before executing the script!**
 
 **You can download CUDNN for your CUDA install by clicking [HERE](https://developer.nvidia.com/rdp/cudnn-download)**
